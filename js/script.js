@@ -33,7 +33,7 @@ const renderPokemon = async (pokemon) => {
         input.value = '';
         searchPokemon = data.id;
     } else {
-        pokemonImage.computedStyleMap.display = 'none';
+        pokemonImage.style.display = 'none';
         pokemonName.innerHTML = 'Not found';
         pokemonNumber.innerHTML = 'ERROR';
     }

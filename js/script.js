@@ -6,8 +6,11 @@ const form = document.querySelector('.form');
 const input = document.querySelector('.input_search');
 const buttonprev = document.querySelector('.btn-prev');
 const buttonnext = document.querySelector('.btn-next');
+const buttonshiny = document.querySelector('.btn-shiny');
 
 let searchPokemon = 1;
+let isShiny = false;
+let currentPokemonData = null;
 
 const fetchPokemon = async (pokemon) => {
     const APIResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
@@ -26,10 +29,12 @@ const renderPokemon = async (pokemon) => {
     const data = await fetchPokemon(pokemon);
 
     if (data) {
-        pokemonImage.computedStyleMap.display = 'block';
+        currentPokemonData = data;  
+        isShiny = false;
+        pokemonImage.style.display = 'block';
         pokemonName.innerHTML = data.name;
         pokemonNumber.innerHTML = data.id;
-        pokemonImage.src = data['sprites']['versions']['generation-v']['black-white']['animated']['front_default'];
+        pokemonImage.src = data['sprites']['other']['official-artwork']['front_default'];
         input.value = '';
         searchPokemon = data.id;
     } else {
@@ -45,15 +50,33 @@ form.addEventListener('submit', (event) => {
 });
 
 buttonprev.addEventListener('click', () => {
-    if (searchPokemon > 1) {
+    if (searchPokemon >= 1) {
         searchPokemon -= 1;
         renderPokemon(searchPokemon);
     }
 });
-
 buttonnext.addEventListener('click', () => {
-    searchPokemon += 1;
-    renderPokemon(searchPokemon);
+    if (searchPokemon >= 1) {
+        searchPokemon += 1;
+        renderPokemon(searchPokemon);
+    }
+});
+
+
+buttonshiny.addEventListener('click', () => {
+    if (!currentPokemonData) return;
+
+    isShiny = !isShiny;
+
+    const spriteUrl = isShiny
+        ? currentPokemonData.sprites.other['official-artwork'].front_shiny
+        : currentPokemonData.sprites.other['official-artwork'].front_default;
+
+    if (spriteUrl) {
+        pokemonImage.src = spriteUrl;
+    } else {
+        alert('Versão shiny não disponível!');
+    }
 });
 
 renderPokemon(searchPokemon);
